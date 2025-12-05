@@ -5,11 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d58550a9-18de-408b-b566-9765c672b88a" name="변경" comment="layer setting">
-      <change afterPath="$PROJECT_DIR$/book/frontend/src/app/books/[bookid]/page.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/book/frontend/src/app/login/page.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/book/frontend/src/app/signup/page.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/book/src/main/java/com/aivle0102/book/config/WebConfig.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/book/frontend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/book/frontend/package-lock.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -89,13 +86,14 @@
   </component>
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
-    &quot;JavaScript 디버그.localhost:3000.executor&quot;: &quot;Debug&quot;,
+    &quot;JavaScript 디버그.3001.executor&quot;: &quot;Run&quot;,
+    &quot;JavaScript 디버그.localhost:3000.executor&quot;: &quot;Run&quot;,
     &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
     &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;merge__front&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;JIHYUN&quot;,
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
     &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
     &quot;last_opened_file_path&quot;: &quot;C:/Users/User/Documents/Aivle_School_4th_Project&quot;,
@@ -104,15 +102,30 @@
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;npm.dev.executor&quot;: &quot;Run&quot;,
     &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
     &quot;ts.external.directory.path&quot;: &quot;C:\\Users\\GINA\\WebstormProjects\\Aivle_School_4th_Project\\book\\frontend\\node_modules\\typescript\\lib&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
-  <component name="RunManager">
+  <component name="RunManager" selected="npm.dev">
     <configuration name="localhost:3000" type="JavascriptDebugType" temporary="true" nameIsGenerated="true" uri="http://localhost:3000">
       <method v="2" />
     </configuration>
+    <configuration name="dev" type="js.build_tools.npm" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/book/frontend/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="dev" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="JavaScript 디버그.localhost:3000" />
+      <item itemvalue="npm.dev" />
+    </list>
     <recent_temporary>
       <list>
         <item itemvalue="JavaScript 디버그.localhost:3000" />
@@ -138,6 +151,8 @@
       <workItem from="1764893650853" duration="4493000" />
       <workItem from="1764910106726" duration="17000" />
       <workItem from="1764910132316" duration="4368000" />
+      <workItem from="1764916964519" duration="666000" />
+      <workItem from="1764917961415" duration="3074000" />
     </task>
     <task id="LOCAL-00001" summary="setting">
       <option name="closed" value="true" />
