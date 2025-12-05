@@ -1,5 +1,6 @@
 'use client';
 
+
 import { Provider } from "react-redux";
 import { store } from "@/redux/store";
 import { AppBar, Toolbar, Typography, Container } from "@mui/material";
