@@ -6,11 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="d58550a9-18de-408b-b566-9765c672b88a" name="변경" comment="finish">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/book/frontend/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/book/frontend/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/book/frontend/src/app/books/[bookid]/page.js" beforeDir="false" afterPath="$PROJECT_DIR$/book/frontend/src/app/books/[bookid]/page.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/book/frontend/src/app/layout.js" beforeDir="false" afterPath="$PROJECT_DIR$/book/frontend/src/app/layout.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/book/frontend/src/app/login/page.js" beforeDir="false" afterPath="$PROJECT_DIR$/book/frontend/src/app/login/page.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/book/frontend/src/app/signup/page.js" beforeDir="false" afterPath="$PROJECT_DIR$/book/frontend/src/app/signup/page.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -96,7 +92,7 @@
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
     "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
-    "git-widget-placeholder": "GINA",
+    "git-widget-placeholder": "main",
     "ignore.virus.scanning.warn.message": "true",
     "junie.onboarding.icon.badge.shown": "true",
     "last_opened_file_path": "C:/Users/User/Documents/Aivle_School_4th_Project",
@@ -116,6 +112,7 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="JavaScript 디버그.localhost:3000" />
         <item itemvalue="JavaScript 디버그.localhost:3000" />
         <item itemvalue="JavaScript 디버그.localhost:3000" />
         <item itemvalue="JavaScript 디버그.localhost:3000" />
