@@ -2,20 +2,18 @@ package com.aivle0102.book.controller;
 
 import com.aivle0102.book.domain.BookInfo;
 import com.aivle0102.book.service.BookInfoService;
-import org.springframework.http.ResponseEntity;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/book")
+@RequiredArgsConstructor
 public class BookInfoController {
 
     private final BookInfoService bookInfoService;
 
-    public BookInfoController(BookInfoService bookInfoService) {
-        this.bookInfoService = bookInfoService;
-    }
 
     // 1. 도서 목록
     @GetMapping("/list")
@@ -46,5 +44,11 @@ public class BookInfoController {
     @DeleteMapping("/delete/{bookId}")
     public void deleteBook(@PathVariable long bookId) {
         bookInfoService.deleteBook(bookId);
+    }
+
+    // 6. AI 표지 이미지 URL 저장
+    @PatchMapping("/createImg/{bookId}")
+    public BookInfo updateCoverUrl(@PathVariable Long bookId, @RequestBody BookInfo book){
+        return bookInfoService.updateCoverUrl(bookId, book.getCoverImageUrl());
     }
 }

@@ -21,6 +21,6 @@ public interface BookInfoService {
     // 5) 도서 삭제 (/book/delete/{id})
     void deleteBook(Long id);
 
-    // 6) AI 표지 이미지 URL 저장 (/book/{id}/createImg)
-    BookInfo updateCoverUrl(Long id, String coverImageUrl);
+    // 6) AI 표지 이미지 URL 저장 (/book/createImg/{id})
+    BookInfo updateCoverUrl(Long bookId, String coverImageUrl);
 }

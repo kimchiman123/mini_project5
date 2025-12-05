@@ -69,10 +69,10 @@ public class BookInfoServiceImpl implements BookInfoService {
 
     // 6) AI 표지 이미지 URL 업데이트
     @Override
-    public BookInfo updateCoverUrl(Long id, String coverImageUrl) {
-        BookInfo book = bookInfoRepository.findById(id)
+    public BookInfo updateCoverUrl(Long bookId, String coverImageUrl) {
+        BookInfo book = bookInfoRepository.findById(bookId)
                 .orElseThrow(() ->
-                        new IllegalArgumentException("해당 ID의 도서를 찾을 수 없습니다. id=" + id));
+                        new IllegalArgumentException("해당 ID의 도서를 찾을 수 없습니다. bookId=" + bookId));
 
         book.setCoverImageUrl(coverImageUrl);
         book.setUpdatedAt(LocalDateTime.now());
