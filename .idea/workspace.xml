@@ -4,7 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d58550a9-18de-408b-b566-9765c672b88a" name="변경" comment="" />
+    <list default="true" id="d58550a9-18de-408b-b566-9765c672b88a" name="변경" comment="layer setting">
+      <change afterPath="$PROJECT_DIR$/book/frontend/src/app/books/[bookid]/page.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/book/frontend/src/app/login/page.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/book/frontend/src/app/signup/page.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/book/frontend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/book/frontend/package-lock.json" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -13,13 +19,66 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
+        <option value="TypeScript File" />
+        <option value="TypeScript JSX File" />
         <option value="JavaScript File" />
       </list>
     </option>
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="JIHYUN_test" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="SWAP_SIDES_IN_COMPARE_BRANCHES" value="true" />
   </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;FairyGina&quot;
+  }
+}</component>
+  <component name="GitToolBoxStore">
+    <option name="recentBranches">
+      <RecentBranches>
+        <option name="branchesForRepo">
+          <list>
+            <RecentBranchesForRepo>
+              <option name="branches">
+                <list>
+                  <RecentBranch>
+                    <option name="branchName" value="merge_front" />
+                    <option name="lastUsedInstant" value="1764914328" />
+                  </RecentBranch>
+                  <RecentBranch>
+                    <option name="branchName" value="JIHYUN_test" />
+                    <option name="lastUsedInstant" value="1764914151" />
+                  </RecentBranch>
+                  <RecentBranch>
+                    <option name="branchName" value="main" />
+                    <option name="lastUsedInstant" value="1764913088" />
+                  </RecentBranch>
+                  <RecentBranch>
+                    <option name="branchName" value="GINA" />
+                    <option name="lastUsedInstant" value="1764908357" />
+                  </RecentBranch>
+                </list>
+              </option>
+              <option name="repositoryRootUrl" value="file://$PROJECT_DIR$" />
+            </RecentBranchesForRepo>
+          </list>
+        </option>
+      </RecentBranches>
+    </option>
+  </component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/KonoPark/Aivle_School_4th_Project.git&quot;,
+    &quot;accountId&quot;: &quot;bd7757f7-2f54-41f8-9fcf-fcbbc18e6d9d&quot;
+  }
+}</component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 0
 }</component>
@@ -30,12 +89,13 @@
   </component>
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
+    &quot;JavaScript 디버그.localhost:3000.executor&quot;: &quot;Debug&quot;,
     &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
     &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;JIHYUN__test&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;merge__front&quot;,
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
     &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
     &quot;last_opened_file_path&quot;: &quot;C:/Users/User/Documents/Aivle_School_4th_Project&quot;,
@@ -45,9 +105,22 @@
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
     &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;C:\\Users\\GINA\\WebstormProjects\\Aivle_School_4th_Project\\book\\frontend\\node_modules\\typescript\\lib&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
+  <component name="RunManager">
+    <configuration name="localhost:3000" type="JavascriptDebugType" temporary="true" nameIsGenerated="true" uri="http://localhost:3000">
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="JavaScript 디버그.localhost:3000" />
+        <item itemvalue="JavaScript 디버그.localhost:3000" />
+        <item itemvalue="JavaScript 디버그.localhost:3000" />
+      </list>
+    </recent_temporary>
+  </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -62,11 +135,92 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1764893649557</updated>
-      <workItem from="1764893650853" duration="10765000" />
+      <workItem from="1764893650853" duration="4493000" />
+      <workItem from="1764910106726" duration="17000" />
+      <workItem from="1764910132316" duration="4368000" />
     </task>
+    <task id="LOCAL-00001" summary="setting">
+      <option name="closed" value="true" />
+      <created>1764910508008</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1764910508008</updated>
+    </task>
+    <task id="LOCAL-00002" summary="finish">
+      <option name="closed" value="true" />
+      <created>1764910922219</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1764910922219</updated>
+    </task>
+    <task id="LOCAL-00003" summary="finish.">
+      <option name="closed" value="true" />
+      <created>1764910933299</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1764910933299</updated>
+    </task>
+    <task id="LOCAL-00004" summary="layer setting">
+      <option name="closed" value="true" />
+      <created>1764912867790</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1764912867790</updated>
+    </task>
+    <task id="LOCAL-00005" summary="layer setting">
+      <option name="closed" value="true" />
+      <created>1764912976345</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1764912976345</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="GINA" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="setting" />
+    <MESSAGE value="finish" />
+    <MESSAGE value="finish." />
+    <MESSAGE value="layer setting" />
+    <option name="LAST_COMMIT_MESSAGE" value="layer setting" />
+  </component>
+  <component name="github-copilot-workspace">
+    <instructionFileLocations>
+      <option value=".github/instructions" />
+    </instructionFileLocations>
+    <promptFileLocations>
+      <option value=".github/prompts" />
+    </promptFileLocations>
   </component>
 </project>
