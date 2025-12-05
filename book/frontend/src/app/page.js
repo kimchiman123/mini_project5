@@ -1,54 +1,49 @@
-//mainpage/page.js
-
 "use client";
 
+import { useEffect, useState } from "react";
 import { Box, Typography, Stack, CardMedia } from "@mui/material";
 
-const mockData = [ //나중에 백엔드에서 데이터 가져와야함
+const mockData = [ //백엔드에서 안가져와지면 임시 데이터 쓰게함
     {
         id: 1,
         title: "그해 여름이야기",
-        description:
-            "이 사건은 깨끗한 물을 공급하는 시설을 더 필요하게 만든 사람이 나중에 쓸 돈을 이미 있는 ..."
-        ,
-        image:
-            "https://image.yes24.com/goods/123456?random=1", // 예시 이미지 (넣고 싶은 이미지로 교체)
+        description: "임시 설명 텍스트...",
+        image: "https://image.yes24.com/goods/123456?random=1",
     },
     {
         id: 2,
         title: "엄마가 보고싶어",
-        description:
-            "이 사건은 깨끗한 물을 공급하는 시설을 더 필요하게 만든 사람이 나중에 쓸 돈을 이미 있는 ..."
-        ,
-        image:
-            "https://image.yes24.com/goods/987654?random=1",
-    },
-    {
-        id: 3,
-        title: "계속 이렇게 살아도 될까?",
-        description:
-            "이 사건은 깨끗한 물을 공급하는 시설을 더 필요하게 만든 사람이 나중에 쓸 돈을 이미 있는 ..."
-        ,
-        image:
-            "https://image.yes24.com/goods/457812?random=1",
+        description: "임시 설명 텍스트...",
+        image: "https://image.yes24.com/goods/987654?random=1",
     },
 ];
 
 export default function MainPage() {
+    const [books, setBooks] = useState([]);
+
+    useEffect(() => {
+        fetch("http://localhost:8080/book/list")
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === "success") {
+                    setBooks(data.data);
+                } else {
+                    setBooks(mockData); // API 실패 → 임시 데이터 사용
+                }
+            })
+            .catch(() => {
+                setBooks(mockData); // 서버 연결 안 되면 mockData로 대체
+            });
+    }, []);
+
     return (
         <Box sx={{ width: "100%", mt: 5 }}>
-
-            {/* 페이지 제목 */}
-            <Typography
-                variant="h4"
-                sx={{ fontWeight: 700, mb: 4, ml: 2 }}
-            >
+            <Typography variant="h4" sx={{ fontWeight: 700, mb: 4, ml: 2 }}>
                 작품 목록
             </Typography>
 
-            {/* 작품 리스트 전체 감싸기 */}
             <Stack spacing={4} sx={{ px: 2 }}>
-                {mockData.map((item) => (
+                {books.map((item) => (
                     <Box
                         key={item.id}
                         sx={{
@@ -61,10 +56,9 @@ export default function MainPage() {
                             backgroundColor: "#f8f4f2",
                         }}
                     >
-                        {/* 왼쪽 이미지 */}
                         <CardMedia
                             component="img"
-                            image={item.image}
+                            image={item.image || "https://placehold.co/130x190"} // 이미지 없으면 기본 이미지
                             alt={item.title}
                             sx={{
                                 width: 130,
@@ -74,25 +68,18 @@ export default function MainPage() {
                             }}
                         />
 
-                        {/* 오른쪽 텍스트 */}
                         <Box sx={{ flex: 1 }}>
                             <Typography variant="h6" sx={{ fontWeight: 700, mb: 1 }}>
                                 {item.title}
                             </Typography>
 
-                            <Typography
-                                sx={{
-                                    color: "#555",
-                                    lineHeight: 1.5,
-                                }}
-                            >
+                            <Typography sx={{ color: "#555", lineHeight: 1.5 }}>
                                 {item.description}
                             </Typography>
                         </Box>
                     </Box>
                 ))}
             </Stack>
-
         </Box>
     );
 }
