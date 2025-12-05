@@ -20,7 +20,7 @@ public class BookInfo {
     private Long bookId;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id") //, nullable = false
     private UserInfo user;
 
     @Column(nullable = false)
