@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function LoginPage() {
     return (
         <div style={styles.page}>  {/* 전체 화면 중앙 정렬 담당 */}
@@ -31,7 +33,9 @@ export default function LoginPage() {
                     <button style={styles.loginButton}>Log in</button>
 
                     <div style={styles.bottomButtons}>
-                        <button style={styles.subButton}>✔ 회원가입</button>
+                        <Link href="/signup">
+                            <button style={styles.subButton}>✔ 회원가입</button>
+                        </Link>
                         <button style={styles.subButton}>✔ ID/PW 찾기</button>
                     </div>
                 </div>
