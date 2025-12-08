@@ -3,9 +3,11 @@ package com.aivle0102.book.controller;
 import com.aivle0102.book.domain.UserInfo;
 import com.aivle0102.book.service.LoginService;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,13 +36,30 @@ public class AuthController {
     }
 
 
-    // 회원가입
+    //  회원가입
+
     @PostMapping("/join")
-    public ResponseEntity<Map<String, Object>> signUp(@RequestBody UserSignUpRequest request) {
+    public ResponseEntity<Map<String, Object>> signUp(
+            @Valid @RequestBody UserSignUpRequest request,   // DTO 유효성 검사
+            BindingResult bindingResult                       // @Valid 검사 결과
+    ) {
 
         Map<String, Object> body = new HashMap<>();
 
+        // 1) DTO 유효성 검사 실패 (@NotBlank, @Email, @Size 등)
+        if (bindingResult.hasErrors()) {
+            // 에러 하나만 꺼내서 메시지 반환
+            String message = bindingResult.getFieldErrors().get(0).getDefaultMessage();
+
+            body.put("status", "error");
+            body.put("message", message);
+
+            // code: 400
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
+        }
+
         try {
+            // 2) 실제 회원가입 비즈니스 로직
             UserInfo user = userService.signUp(request);
 
             Map<String, Object> data = new HashMap<>();
@@ -54,14 +73,14 @@ public class AuthController {
             // code: 201
             return ResponseEntity.status(HttpStatus.CREATED).body(body);
 
-        } catch (IllegalStateException e) { // 이미 가입된 이메일
+        } catch (IllegalStateException e) {    // 3) 이미 가입된 이메일 같은 비즈니스 예외
             body.put("status", "error");
             body.put("message", e.getMessage());
 
             // code: 400
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
 
-        } catch (Exception e) { // 기타 서버 에러
+        } catch (Exception e) {                // 4) 그 외 서버 내부 에러
             body.put("status", "error");
             body.put("message", "서버 내부 오류가 발생했습니다. 관리자에게 문의하세요.");
 

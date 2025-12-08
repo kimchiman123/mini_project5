@@ -18,21 +18,20 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserInfo signUp(UserSignUpRequest request) {
 
-        // 1) 이메일 중복 체크
-        boolean exists = userInfoRepository.findByEmail(request.getEmail()).isPresent();
-        if (exists) {
-            // 400 응답으로 내려줄 메시지
-            throw new IllegalStateException("이미 가입된 이메일입니다.");
-        }
+        // 1) 이메일 중복 체크 (이미 해놨으면 그대로 두고)
+        userInfoRepository.findByEmail(request.getEmail())
+                .ifPresent(user -> {
+                    throw new IllegalStateException("이미 가입된 이메일입니다.");
+                });
 
-        // 2) 엔티티 생성
+        // 2) 입력값 정리 + 유저 엔티티 생성
         UserInfo user = new UserInfo();
-        user.setEmail(request.getEmail());
-        user.setPassword(request.getPassword());
-        user.setName(request.getName());
-        user.setPhone(request.getPhone());
+        user.setEmail(request.getEmail().trim().toLowerCase()); // 앞뒤 공백 제거 + 소문자 통일
+        user.setPassword(request.getPassword());                 // 실서비스면 여기서 암호화
+        user.setName(request.getName().trim());
+        user.setPhone(request.getPhone() != null ? request.getPhone().trim() : null);
 
-        // 3) 저장 후 리턴
+        // 3) 저장
         return userInfoRepository.save(user);
     }
 }
