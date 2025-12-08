@@ -36,47 +36,45 @@ export default function CreateWork() {
         setModel(e.target.value);
     };
 
-    // ⭐ 최종 handleSubmit (FK 오류 해결된 완성형)
+    // 최종 handleSubmit (multipart 반영)
     const handleSubmit = async () => {
 
-        // 🔹 로그인 정보 가져오기
         const userData = JSON.parse(localStorage.getItem("user"));
         if (!userData || !userData.userId) {
-            alert("로그인 정보가 유효하지 않습니다. 다시 로그인해주세요.");
+            alert("로그인 정보가 유효하지 않습니다.");
             window.location.href = "/login";
             return;
         }
 
         const userId = userData.userId;
 
-        // 🔹 필수 입력 체크
-        if (!form.title || !form.author || !form.content) {
-            alert("제목, 작가명, 내용은 필수 입력입니다.");
-            return;
-        }
+        // FormData 객체 생성
+        const formData = new FormData();
 
-        // 🔹 표지 이미지 미등록 시 확인
-        let coverUrl = imageUrl;
-        if (!imageUrl) {
-            const proceed = confirm("표지 이미지가 없습니다. 이미지 없이 등록할까요?");
-            if (!proceed) return;
-            coverUrl = null;
-        }
+        // JSON → Blob 변환 후 FormData 에 넣기
+        const bookJson = JSON.stringify({
+            title: form.title,
+            author: form.author,
+            category: form.category,
+            content: form.content,
+            coverImageUrl: imageUrl
+        });
+
+        formData.append(
+            "book",
+            new Blob([bookJson], { type: "application/json" })
+        );
+
+        // 파일이 있다면 추가
+        // formData.append("file", selectedFile);
+
+        // userId는 @RequestParam
+        formData.append("userId", userId);
 
         try {
             const response = await fetch("http://localhost:8080/book/insert", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    user: { userId: Number(userId) },  // 🔥 핵심 FK: userId 포함
-                    title: form.title,
-                    content: form.content,
-                    author: form.author,
-                    category: form.category,
-                    coverImageUrl: coverUrl
-                }),
+                body: formData // ❗ headers 설정하면 안 됨!
             });
 
             if (!response.ok) {
@@ -88,15 +86,15 @@ export default function CreateWork() {
 
             const result = await response.json();
             console.log("등록 결과:", result);
-
-            alert("🎉 작품이 성공적으로 등록되었습니다!");
+            alert("등록 성공!");
             window.location.href = "/mainpage";
 
-        } catch (error) {
-            console.error("등록 오류:", error);
-            alert("요청 중 문제가 발생했습니다.");
+        } catch (err) {
+            console.error(err);
+            alert("요청 중 오류 발생");
         }
     };
+
 
     return (
         <Box
