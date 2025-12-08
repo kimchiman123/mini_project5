@@ -1,20 +1,22 @@
 'use client';
 
 import { useEffect, useState } from "react";
-import { Grid, TextField, Typography, Button, MenuItem, Box, Card, CardMedia, FormControl, InputLabel, Select } from "@mui/material";
+import {
+    Grid, TextField, Typography, Button, MenuItem, Box,
+    Card, CardMedia, FormControl, InputLabel, Select
+} from "@mui/material";
 
 export default function CreateWork() {
 
-    // 페이지 진입 시 로그인 체크
+    // ⭐ 로그인 체크
     useEffect(() => {
-        const user = localStorage.getItem("user");
+        const user = JSON.parse(localStorage.getItem("user"));
 
-        if (!user) {
+        if (!user || !user.userId) {
             alert("로그인 후 이용 가능합니다.");
             window.location.href = "/login";
         }
     }, []);
-
 
     const [form, setForm] = useState({
         title: "",
@@ -34,18 +36,29 @@ export default function CreateWork() {
         setModel(e.target.value);
     };
 
+    // ⭐ 최종 handleSubmit (FK 오류 해결된 완성형)
     const handleSubmit = async () => {
-        const token = sessionStorage.getItem("token");
-        const userId = sessionStorage.getItem("id");
 
-        if (!form.title || !form.author || !form.content) {
-            alert("제목과 저자명, 내용을 입력해야 합니다.");
+        // 🔹 로그인 정보 가져오기
+        const userData = JSON.parse(localStorage.getItem("user"));
+        if (!userData || !userData.userId) {
+            alert("로그인 정보가 유효하지 않습니다. 다시 로그인해주세요.");
+            window.location.href = "/login";
             return;
         }
 
+        const userId = userData.userId;
+
+        // 🔹 필수 입력 체크
+        if (!form.title || !form.author || !form.content) {
+            alert("제목, 작가명, 내용은 필수 입력입니다.");
+            return;
+        }
+
+        // 🔹 표지 이미지 미등록 시 확인
         let coverUrl = imageUrl;
         if (!imageUrl) {
-            const proceed = confirm("표지 이미지가 없습니다. 이미지 없이 작품을 등록할까요?");
+            const proceed = confirm("표지 이미지가 없습니다. 이미지 없이 등록할까요?");
             if (!proceed) return;
             coverUrl = null;
         }
@@ -55,18 +68,20 @@ export default function CreateWork() {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "Authorization": token
                 },
                 body: JSON.stringify({
-                    user: { userId: Number(userId) },   // 유저 아이디!!!
+                    user: { userId: Number(userId) },  // 🔥 핵심 FK: userId 포함
                     title: form.title,
                     content: form.content,
                     author: form.author,
+                    category: form.category,
                     coverImageUrl: coverUrl
                 }),
             });
 
             if (!response.ok) {
+                const errorText = await response.text();
+                console.error("응답 오류:", errorText);
                 alert("등록 실패! 서버 오류가 발생했습니다.");
                 return;
             }
@@ -74,7 +89,7 @@ export default function CreateWork() {
             const result = await response.json();
             console.log("등록 결과:", result);
 
-            alert("작품이 성공적으로 등록되었습니다!");
+            alert("🎉 작품이 성공적으로 등록되었습니다!");
             window.location.href = "/mainpage";
 
         } catch (error) {

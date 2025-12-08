@@ -24,13 +24,23 @@ public class AuthController {
     private final LoginService loginService;
     private final UserService userService;
 
+    // 로그인
     @PostMapping("/login")
-    public ResponseEntity<?> LoginForm_Page(@RequestBody UserInfo user, HttpSession session) throws Exception {
+    public ResponseEntity<?> login(@RequestBody UserInfo user, HttpSession session) throws Exception {
 
         UserInfo loginUser = loginService.getUser(user);
+
+        // 세션 저장
         session.setAttribute("user", loginUser.getUserId());
 
-        return ResponseEntity.ok("로그인 성공");
+        // JSON 응답 생성
+        Map<String, Object> body = new HashMap<>();
+        body.put("status", "success");
+        //body.put("message", "로그인 성공");
+        body.put("userId", loginUser.getUserId());
+        body.put("email", loginUser.getEmail());
+
+        return ResponseEntity.ok(body);
     }
 
 

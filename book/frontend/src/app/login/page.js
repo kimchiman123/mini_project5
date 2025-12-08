@@ -18,22 +18,27 @@ export default function LoginPage() {
                     email: email,
                     password: password,
                 }),
-                credentials: "include"   // ★ 세션 유지하기 위해 추가
+                credentials: "include"
             });
 
-            const result = await response.text();
+            const result = await response.json();
             console.log("서버 응답:", result);
 
-            if (!response.ok) {
-                alert("❌ 로그인 실패! 아이디 또는 비밀번호를 확인하세요.");
+            // 응답 코드 확인
+            if (!response.ok || result.status !== "success") {
+                alert("❌ 로그인 실패! 이메일 또는 비밀번호를 확인하세요.");
                 return;
             }
 
             // 로그인 정보 저장
-            localStorage.setItem("user", JSON.stringify({ email }));
+            // (백엔드가 내려주는 구조: userId, email, message, status)
+            localStorage.setItem("user", JSON.stringify({
+                userId: result.userId,
+                email: result.email
+            }));
 
             alert("✔ 로그인 성공!");
-            window.location.href = "/mainpage"; // 로그인 성공 후 이동
+            window.location.href = "/mainpage";
 
         } catch (error) {
             console.error("로그인 오류:", error);
