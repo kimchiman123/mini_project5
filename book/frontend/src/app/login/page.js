@@ -1,10 +1,46 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
 
 export default function LoginPage() {
-    return (
-        <div style={styles.page}>  {/* 전체 화면 중앙 정렬 담당 */}
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
 
-            <div style={styles.container}>  {/* 회색 박스(card) 시작 */}
+    const handleLogin = async () => {
+        console.log("로그인 시도:", { email, password });
+
+        try {
+            const response = await fetch("http://localhost:8080/user/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    email: email,
+                    password: password,
+                }),
+                credentials: "include"   // ★ 세션 유지하기 위해 추가
+            });
+
+            const result = await response.text();
+            console.log("서버 응답:", result);
+
+            if (!response.ok) {
+                alert("❌ 로그인 실패! 아이디 또는 비밀번호를 확인하세요.");
+                return;
+            }
+
+            alert("✔ 로그인 성공!");
+            window.location.href = "/mainpage"; // 로그인 성공 후 이동
+
+        } catch (error) {
+            console.error("로그인 오류:", error);
+            alert("서버와 연결할 수 없습니다.");
+        }
+    };
+
+    return (
+        <div style={styles.page}>
+            <div style={styles.container}>
 
                 {/* 왼쪽 책 이미지 */}
                 <div style={styles.leftBox}>
@@ -22,27 +58,45 @@ export default function LoginPage() {
 
                     <div style={styles.inputGroup}>
                         <label style={styles.label}>ID</label>
-                        <input type="text" placeholder="Value" style={styles.input} />
+                        <input
+                            type="text"
+                            placeholder="이메일 입력"
+                            style={styles.input}
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                        />
                     </div>
 
                     <div style={styles.inputGroup}>
                         <label style={styles.label}>Password</label>
-                        <input type="password" placeholder="Value" style={styles.input} />
+                        <input
+                            type="password"
+                            placeholder="비밀번호 입력"
+                            style={styles.input}
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                        />
                     </div>
 
-                    <button style={styles.loginButton}>Log in</button>
+                    <button style={styles.loginButton} onClick={handleLogin}>
+                        Log in
+                    </button>
 
                     <div style={styles.bottomButtons}>
                         <Link href="/signup">
                             <button style={styles.subButton}>✔ 회원가입</button>
                         </Link>
-                        <button style={styles.subButton}>✔ ID/PW 찾기</button>
+                        <button style={styles.subButton} onClick={() => window.location.href="/find/id"}>
+                            ✔ ID/PW 찾기
+                        </button>
                     </div>
                 </div>
+
             </div>
         </div>
     );
 }
+
 const styles = {
     page: {
         width: "100%",

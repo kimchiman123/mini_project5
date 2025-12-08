@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -33,5 +35,30 @@ public class UserServiceImpl implements UserService {
 
         // 3) 저장
         return userInfoRepository.save(user);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public UserInfo findByNameAndPhone(String name, String phone) {
+        return userInfoRepository.findByNameAndPhone(name, phone)
+                .orElse(null);
+    }
+
+    @Override
+    @Transactional
+    public String resetPassword(String email, String name, String phone) {
+
+        UserInfo user = userInfoRepository
+                .findByEmailAndNameAndPhone(email, name, phone)
+                .orElseThrow(() -> new IllegalArgumentException("일치하는 사용자 정보가 없습니다."));
+
+        // 임시 비밀번호 생성 (8자리)
+        String tempPassword = UUID.randomUUID().toString().substring(0, 8);
+
+        // 비밀번호 변경 (지금은 평문이지만, 나중에 암호화 가능)
+        user.setPassword(tempPassword);
+        userInfoRepository.save(user);
+
+        return tempPassword;
     }
 }
