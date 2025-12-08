@@ -29,6 +29,9 @@ export default function LoginPage() {
                 return;
             }
 
+            // 로그인 정보 저장
+            localStorage.setItem("user", JSON.stringify({ email }));
+
             alert("✔ 로그인 성공!");
             window.location.href = "/mainpage"; // 로그인 성공 후 이동
 
