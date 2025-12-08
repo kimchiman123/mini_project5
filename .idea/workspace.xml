@@ -4,9 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d58550a9-18de-408b-b566-9765c672b88a" name="변경" comment="merged2">
+    <list default="true" id="d58550a9-18de-408b-b566-9765c672b88a" name="변경" comment="merged3">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/book/src/main/java/com/aivle0102/book/controller/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/book/src/main/java/com/aivle0102/book/controller/AuthController.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -68,7 +67,7 @@
       <option name="presentableId" value="Default" />
       <updated>1764924905191</updated>
       <workItem from="1764924906986" duration="833000" />
-      <workItem from="1765153793745" duration="1475000" />
+      <workItem from="1765153793745" duration="2651000" />
     </task>
     <task id="LOCAL-00001" summary="merged">
       <option name="closed" value="true" />
@@ -86,7 +85,15 @@
       <option name="project" value="LOCAL" />
       <updated>1765154761857</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="merged3">
+      <option name="closed" value="true" />
+      <created>1765155290256</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1765155290256</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -95,7 +102,8 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="merged" />
     <MESSAGE value="merged2" />
-    <option name="LAST_COMMIT_MESSAGE" value="merged2" />
+    <MESSAGE value="merged3" />
+    <option name="LAST_COMMIT_MESSAGE" value="merged3" />
   </component>
   <component name="github-copilot-workspace">
     <instructionFileLocations>
