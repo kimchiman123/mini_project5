@@ -1,51 +1,141 @@
+"use client";
+
+import { useState } from "react";
+
 export default function SignupPage() {
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [passwordCheck, setPasswordCheck] = useState("");
+    const [phone, setPhone] = useState("");
+
+    const handleSignup = async () => {
+
+        //로그 출력
+        const userData = {
+            name,
+            email,
+            password,
+            passwordCheck,
+            phone
+        };
+
+        // 🔥 프론트에서 입력한 값 모두 출력
+        console.log("입력한 회원 정보:", userData);
+
+        if (password !== passwordCheck) {
+            alert("비밀번호가 일치하지 않습니다.");
+            return;
+        }
+
+        try {
+            const response = await fetch("http://localhost:8080/user/join", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    name: name,
+                    email: email,
+                    password: password,
+                    phone: phone
+                }),
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                alert(result.message || "회원가입 실패");
+                return;
+            }
+
+            alert("회원가입 성공!");
+            window.location.href = "/login"; // 가입 후 로그인 페이지로 이동
+
+        } catch (error) {
+            console.error("회원가입 오류:", error);
+            alert("서버 오류가 발생했습니다.");
+        }
+    };
+
     return (
         <div style={styles.page}>
-            {/* 회원가입 카드 */}
             <div style={styles.card}>
                 <h2 style={styles.title}>회원가입</h2>
                 <p style={styles.subtitle}>서비스 이용을 위한 정보를 입력해주세요.</p>
 
-                {/* 이름 */}
                 <div style={styles.inputGroup}>
                     <label style={styles.label}>이름</label>
-                    <input type="text" placeholder="실명을 입력해주세요" style={styles.input} />
+                    <input
+                        type="text"
+                        placeholder="실명을 입력해주세요"
+                        style={styles.input}
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                    />
                 </div>
 
-                {/* 이메일(ID) */}
                 <div style={styles.inputGroup}>
                     <label style={styles.label}>ID (이메일)</label>
-                    <input type="email" placeholder="사용할 이메일 주소 입력" style={styles.input} />
+                    <input
+                        type="email"
+                        placeholder="사용할 이메일"
+                        style={styles.input}
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                    />
                 </div>
 
-                {/* 비밀번호 */}
                 <div style={styles.inputGroup}>
                     <label style={styles.label}>비밀번호</label>
-                    <input type="password" placeholder="8자 이상, 영문/숫자 포함" style={styles.input} />
+                    <input
+                        type="password"
+                        placeholder="8자 이상, 영문/숫자 포함"
+                        style={styles.input}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                    />
                 </div>
 
-                {/* 비밀번호 확인 */}
                 <div style={styles.inputGroup}>
                     <label style={styles.label}>비밀번호 확인</label>
-                    <input type="password" placeholder="비밀번호를 다시 입력해주세요" style={styles.input} />
+                    <input
+                        type="password"
+                        placeholder="비밀번호를 다시 입력"
+                        style={styles.input}
+                        value={passwordCheck}
+                        onChange={(e) => setPasswordCheck(e.target.value)}
+                    />
                 </div>
 
-                {/* 전화번호 */}
                 <div style={styles.inputGroup}>
                     <label style={styles.label}>전화번호</label>
-                    <input type="text" placeholder="'-' 없이 숫자만 입력" style={styles.input} />
+                    <input
+                        type="text"
+                        placeholder="'-' 없이 숫자만 입력"
+                        style={styles.input}
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                    />
                 </div>
 
-                <button style={styles.submitButton}>가입 완료</button>
+                <button style={styles.submitButton} onClick={handleSignup}>
+                    가입 완료
+                </button>
 
                 <p style={styles.footerText}>
-                    이미 계정이 있으신가요? <span style={styles.loginLink}>로그인 페이지로 돌아가기</span>
+                    이미 계정이 있으신가요?
+                    <span
+                        style={styles.loginLink}
+                        onClick={() => window.location.href = "/login"}
+                    >
+                        로그인 페이지로 돌아가기
+                    </span>
                 </p>
-            </div>
 
+            </div>
         </div>
     );
 }
+
 const styles = {
     page: {
         width: "100%",
