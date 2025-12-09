@@ -37,7 +37,7 @@ public class BookInfoController {
 
     // 2. 도서 상세
     @GetMapping("/detail/{id}")
-    public BookInfo getBookDetail(@PathVariable Long id) {
+    public BookInfo getBookDetail(@PathVariable Long id) throws IOException {
         return bookInfoService.getBookDetail(id);
     }
 

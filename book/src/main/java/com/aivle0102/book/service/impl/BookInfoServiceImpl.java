@@ -1,7 +1,14 @@
 package com.aivle0102.book.service.impl;
 
+import java.awt.print.Book;
 import java.net.URL;
 import java.io.InputStream;
+
+import com.aivle0102.book.dto.BookDto;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.springframework.mock.web.MockMultipartFile;
 
 import com.aivle0102.book.domain.BookInfo;
@@ -18,7 +25,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -47,10 +58,19 @@ public class BookInfoServiceImpl implements BookInfoService {
     // 2) 도서 상세 조회
     @Transactional(readOnly = true)
     @Override
-    public BookInfo getBookDetail(Long id) {
-        return bookInfoRepository.findById(id)
-                .orElseThrow(() ->
-                        new IllegalArgumentException("해당 ID의 도서를 찾을 수 없습니다. id=" + id));
+    public BookInfo getBookDetail(Long id) throws IOException{
+        BookInfo book;
+
+        if(id > 1000){
+            book = searchBook(String.valueOf(id));
+
+        } else{
+            book = bookInfoRepository.findById(id)
+                    .orElseThrow(() ->
+                            new IllegalArgumentException("해당 ID의 도서를 찾을 수 없습니다. id=" + id));
+        }
+
+        return book;
     }
 
     // 3) 도서 등록
@@ -264,4 +284,45 @@ public class BookInfoServiceImpl implements BookInfoService {
         imgs.forEach(img -> img.setState("D"));
     }
 
+    private BookInfo searchBook(String goodsNo) throws IOException {
+
+        BookInfo book = new BookInfo();
+        String detailUrl = "https://www.yes24.com/Product/Goods/" + goodsNo;
+
+        Document doc = Jsoup.connect(detailUrl)
+                .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36")
+                .timeout(7000)
+                .get();
+
+        // 제목
+        String title = doc.select("meta[name=title]").attr("content");
+
+        // 저자
+        String author = doc.select("meta[name=author]").attr("content");
+
+        // 요약 설명
+        String description = doc.select("meta[name=description]").attr("content");
+
+        // 이미지
+        String imageUrl = doc.select("meta[property=og:image]").attr("content");
+
+        book.setBookId(Long.parseLong(goodsNo));
+        book.setTitle(title);
+        book.setAuthor(author);
+        book.setContent(description);
+        book.setCoverImageUrl(imageUrl);
+        book.setUser(new UserInfo(9999L, "admin@naver.com", "1234", "관리자", "01012345678"));
+        book.setCategory("");
+        book.setCreatedAt(LocalDateTime.now());
+        book.setUpdatedAt(LocalDateTime.now());
+
+        System.out.println(book.getTitle());
+        System.out.println(book.getAuthor());
+        System.out.println(book.getContent());
+        System.out.println(book.getCoverImageUrl());
+        System.out.println(book.getTitle());
+        System.out.println(book.getTitle());
+
+        return book;
+    }
 }

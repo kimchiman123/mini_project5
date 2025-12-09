@@ -57,9 +57,13 @@ public class BookCrawlingServiceImpl implements BookCrawlingService {
             // 이미지
             String imageUrl = item.select("img.lazy").attr("data-original");
 
+            // 상품번호
+            String goodsNo = item.attr("data-goods-no");
+
 
             if (!title.isEmpty()) {
                 result.add(new BookDto(
+                        goodsNo,
                         title,
                         author,
                         imageUrl

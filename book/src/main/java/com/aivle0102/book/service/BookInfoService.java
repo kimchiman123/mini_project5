@@ -15,7 +15,7 @@ public interface BookInfoService {
     List<BookInfo> getBookListByUser(Long userId);
 
     // 2) 도서 상세 (/book/detail/{id})
-    BookInfo getBookDetail(Long id);
+    BookInfo getBookDetail(Long id) throws IOException;
 
     // 3) 도서 등록 (/book/insert)
     BookInfo insertBook(BookInfo book, Long userId, MultipartFile file) throws IOException;
