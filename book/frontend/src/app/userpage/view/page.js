@@ -91,8 +91,10 @@ export default function MyPageView() {
                         : "알 수 없음",
                     description: item.content ?? "",
                     image:
-                        item.coverImageUrl ||
-                        "https://via.placeholder.com/140x200?text=No+Image",
+                        item.coverImageUrl
+                            ? `http://localhost:8080${item.coverImageUrl}`
+                            : "https://via.placeholder.com/140x200?text=No+Image",
+
                 }));
 
                 setWorks(fetchedWorks);
@@ -177,56 +179,71 @@ export default function MyPageView() {
         if (!editingWork) return;
 
         try {
+            // 1) FormData 생성
+            const formData = new FormData();
+
+            // 2) book 정보(JSON)를 문자열로 FormData에 넣음
+            const bookJson = JSON.stringify({
+                title: editingWork.title,
+                content: editingWork.description,
+                author: editingWork.author,
+                coverImageUrl: editingWork.image?.replace("http://localhost:8080", "")
+            });
+
+            formData.append("book", new Blob([bookJson], { type: "application/json" }));
+
+            // 3) 파일이 선택된 경우만 추가
+            if (editingWork.file) {
+                formData.append("file", editingWork.file);
+            }
+
+            // 4) userId 추가 (localStorage에서 가져오기)
+            const user = JSON.parse(localStorage.getItem("user"));
+            formData.append("userId", user.userId);
+
+            // 5) PUT 요청 보내기
             const response = await fetch(
-                `http://localhost:8080/book/update/simple/${editingWork.id}`,
+                `http://localhost:8080/book/update/${editingWork.id}`,
                 {
                     method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        title: editingWork.title,
-                        content: editingWork.description,
-                        author: editingWork.author,
-                        coverImageUrl: editingWork.image,
-                    }),
+                    body: formData, // ★ Content-Type 설정하면 안됨(브라우저가 자동 설정)
                 }
             );
 
             if (!response.ok) {
                 const errorBody = await response.text();
-                throw new Error(errorBody || `HTTP error! status: ${response.status}`);
+                throw new Error(errorBody || `HTTP 오류: ${response.status}`);
             }
 
-            // 백엔드 응답(JSON) 확인 (원하면 사용)
             const result = await response.json();
-            console.log("✅ 수정 응답:", result);
+            console.log("📘 수정 성공:", result);
 
-            // 화면에 들고 있는 works 상태를 직접 업데이트
-            setWorks((currentWorks) =>
-                currentWorks.map((work) =>
-                    work.id === editingWork.id
+            // 화면에서 리스트 업데이트
+            setWorks(current =>
+                current.map(item =>
+                    item.id === editingWork.id
                         ? {
-                            ...work,
-                            // editingWork 내용으로 갈아끼우기
+                            ...item,
                             title: editingWork.title,
                             author: editingWork.author,
                             description: editingWork.description,
-                            image: editingWork.image,
-                            // createdAt 은 기존 값 유지
+                            image: editingWork.file
+                                ? URL.createObjectURL(editingWork.file)
+                                : editingWork.image
                         }
-                        : work
+                        : item
                 )
             );
 
-            alert("변경사항이 저장되었습니다.");
-            handleCloseModal(); // 모달 닫기
+            alert("수정이 완료되었습니다.");
+            handleCloseModal();
 
-        } catch (error) {
-            console.error("수정 중 오류:", error);
-            alert(`수정 중 오류: ${error.message}`);
+        } catch (err) {
+            console.error("수정 오류:", err);
+            alert("수정 실패: " + err.message);
         }
     };
+
 
 
     if (loading) {
@@ -339,13 +356,19 @@ export default function MyPageView() {
                             margin="normal"
                             InputProps={{ readOnly: true }}
                         />
-                        <TextField
-                            name="image"
-                            label="책 표지 URL"
-                            value={editingWork.image}
-                            onChange={handleFormChange}
-                            fullWidth
-                            margin="normal"
+                        <Typography
+                            variant="body2"
+                            sx={{ color: "black", mt: 1, mb: 1 }}
+                        >
+                            • 새로운 표지 이미지를 업로드할 수 있습니다.
+                        </Typography>
+                        <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => setEditingWork(prev => ({
+                                ...prev,
+                                file: e.target.files[0]   // 선택한 파일 저장
+                            }))}
                         />
                         <TextField
                             name="description"

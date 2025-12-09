@@ -54,9 +54,17 @@ export default function BookDetailPage() {
                 const result = await res.json();
                 console.log("📗 /book/detail 응답:", result);
 
-                // ApiResponse 형태: { status, data, message }
-                const data = Array.isArray(result) ? result[0] : result.data;
-
+                let data;
+                if (result.bookId) {
+                    // BookInfo 직접 반환된 경우
+                    data = result;
+                } else if (Array.isArray(result)) {
+                    // 배열로 반환된 경우
+                    data = result[0];
+                } else if (result.data) {
+                    // ApiResponse 형태로 반환된 경우
+                    data = result.data;
+                }
                 if (!data) {
                     throw new Error("도서 정보를 찾을 수 없습니다.");
                 }
@@ -70,8 +78,9 @@ export default function BookDetailPage() {
                         ? data.createdAt.substring(0, 10)
                         : "알 수 없음",
                     image:
-                        data.coverImageUrl ||
-                        "https://via.placeholder.com/200x300?text=No+Image",
+                         data.coverImageUrl
+                             ? `http://localhost:8080${data.coverImageUrl}`
+                                 : "https://via.placeholder.com/200x300?text=No+Image",
                     // content를 요약/줄거리 둘 다에 재사용
                     summary: data.content || "요약 정보가 없습니다.",
                     plot: data.content || "줄거리 정보가 없습니다.",
