@@ -4,9 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e31bcf78-0dcc-4cb9-ae6f-a1a78c686b84" name="변경" comment="fin">
+    <list default="true" id="e31bcf78-0dcc-4cb9-ae6f-a1a78c686b84" name="변경" comment="help">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/book/frontend/src/app/books/[bookid]/page.js" beforeDir="false" afterPath="$PROJECT_DIR$/book/frontend/src/app/books/[bookid]/page.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -43,6 +43,10 @@
               <option name="branches">
                 <list>
                   <RecentBranch>
+                    <option name="branchName" value="main" />
+                    <option name="lastUsedInstant" value="1765263846" />
+                  </RecentBranch>
+                  <RecentBranch>
                     <option name="branchName" value="merge2_GINA" />
                     <option name="lastUsedInstant" value="1765255021" />
                   </RecentBranch>
@@ -57,10 +61,6 @@
                   <RecentBranch>
                     <option name="branchName" value="merge2_up" />
                     <option name="lastUsedInstant" value="1765254299" />
-                  </RecentBranch>
-                  <RecentBranch>
-                    <option name="branchName" value="merge2" />
-                    <option name="lastUsedInstant" value="1765254279" />
                   </RecentBranch>
                 </list>
               </option>
@@ -91,7 +91,7 @@
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
     "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
-    "git-widget-placeholder": "merge2__SUJIN",
+    "git-widget-placeholder": "main",
     "junie.onboarding.icon.badge.shown": "true",
     "kotlin-language-version-configured": "true",
     "node.js.detected.package.eslint": "true",
@@ -102,6 +102,11 @@
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\GINA\WebstormProjects\Aivle_School_4th_Project" />
+    </key>
+  </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -161,7 +166,15 @@
       <option name="project" value="LOCAL" />
       <updated>1765263024444</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="help">
+      <option name="closed" value="true" />
+      <created>1765263950666</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1765263950666</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -180,12 +193,12 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="check jihyun" />
-    <MESSAGE value="help" />
     <MESSAGE value="help1" />
     <MESSAGE value="error" />
     <MESSAGE value="merge2 commit" />
     <MESSAGE value="fin" />
-    <option name="LAST_COMMIT_MESSAGE" value="fin" />
+    <MESSAGE value="help" />
+    <option name="LAST_COMMIT_MESSAGE" value="help" />
   </component>
   <component name="github-copilot-workspace">
     <instructionFileLocations>
