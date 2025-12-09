@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Box, Typography, Stack, CardMedia, Pagination } from "@mui/material";
 
+
 // 🔹 백엔드 응답이 없을 때 fallback 데이터
 const mockData = [
     {
