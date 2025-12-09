@@ -13,8 +13,8 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-
 public class BookInfo {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long bookId;
@@ -32,12 +32,10 @@ public class BookInfo {
     @Column
     private String author;
 
-    @Column(name = "cover_image_url", length = 2000)
-
     @Column
     private String category;
 
-    @Column
+    @Column(name = "cover_image_url", length = 2000)
     private String coverImageUrl;
 
     @Column(nullable = false)
