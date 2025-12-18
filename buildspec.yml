@@ -7,36 +7,40 @@ phases:
       nodejs: 20
     commands:
       - echo "Current directory check..."
-      - ls -al  # 파일 목록을 로그에 출력하여 위치를 확인합니다.
+      - ls -al
+      - echo "Fixing line endings for gradlew..."
+      # [추가된 부분] 윈도우 스타일의 줄바꿈(\r)을 제거하여 리눅스에서 실행 가능하게 만듭니다.
+      - sed -i 's/\r$//' gradlew 
       - echo "Granting execute permission to gradlew..."
-      # 파일이 루트에 있으므로 바로 실행 권한을 부여합니다.
-      - chmod +x gradlew || echo "gradlew not found at root"
+      - chmod +x gradlew || echo "gradlew not found"
 
   pre_build:
     commands:
       - echo "Pre-build phase..."
+      # 빌드 시 사용할 이미지 태그 생성
       - export IMAGE_TAG=$(date +%Y%m%d%H%M%S)
       - echo "Logging in to Amazon ECR..."
+      # ECR 로그인 권한 확인
       - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
 
   build:
     commands:
       - echo "Building Backend..."
-      # 루트에 있는 gradlew로 빌드를 수행합니다.
+      # 이제 127 에러 없이 정상적으로 Gradle 빌드가 시작됩니다.
       - ./gradlew build -x test
       
-      # 백엔드 이미지 빌드 (Dockerfile이 루트에 있으므로 '.' 사용)
       - echo "Building Backend Docker Image..."
+      # 최상단 루트의 Dockerfile을 사용하여 이미지 생성
       - docker build -t $IMAGE_REPO_NAME_BACKEND:$IMAGE_TAG .
       - docker tag $IMAGE_REPO_NAME_BACKEND:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME_BACKEND:$IMAGE_TAG
 
   post_build:
     commands:
       - echo "Pushing Backend Image..."
+      # 빌드된 이미지를 ECR 저장소로 푸시
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME_BACKEND:$IMAGE_TAG
       
-      # 프론트엔드 이미지 빌드 (frontend 폴더가 있는 경우)
-      - echo "Building Frontend Docker Image..."
+      - echo "Building and Pushing Frontend Image..."
       - cd frontend
       - docker build -t $IMAGE_REPO_NAME_FRONTEND:$IMAGE_TAG .
       - docker tag $IMAGE_REPO_NAME_FRONTEND:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME_FRONTEND:$IMAGE_TAG
@@ -44,5 +48,7 @@ phases:
 
 artifacts:
   files:
+    # 빌드 완료 후 생성된 .jar 파일들을 아티팩트로 지정
     - '**/*'
   base-directory: 'build/libs'
+  discard-paths: yes
