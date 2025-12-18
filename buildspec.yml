@@ -1,46 +1,40 @@
 version: 0.2
 
-env:
-  variables:
-    # 이 값들은 CodePipeline 환경 변수에서 설정해야 합니다.
-    # AWS_ACCOUNT_ID: "YOUR_AWS_ACCOUNT_ID"
-    # AWS_DEFAULT_REGION: "YOUR_AWS_REGION"
-    # IMAGE_REPO_NAME_BACKEND: "your-ecr-repo-name-for-backend"
-    # IMAGE_REPO_NAME_FRONTEND: "your-ecr-repo-name-for-frontend"
-    IMAGE_TAG: "latest"
-
 phases:
+  install:
+    runtime-versions:
+      java: corretto17
+      nodejs: 20
+    commands:
+      - echo "Install phase..."
+      - chmod +x ./gradlew # 루트에 있으므로 바로 실행 가능
   pre_build:
     commands:
+      - export IMAGE_TAG=$(date +%Y%m%d%H%M%S)
       - echo "Logging in to Amazon ECR..."
       - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
-
   build:
     commands:
-      # 백엔드 이미지 빌드 및 푸시
+      - echo "Building Backend..."
+      - ./gradlew build -x test # 루트에서 백엔드 빌드 실행
+      
+      # [백엔드 도커 빌드] Dockerfile이 루트에 있으므로 마침표(.) 하나면 끝납니다.
       - echo "Building the backend Docker image..."
-      - cd book
       - docker build -t $IMAGE_REPO_NAME_BACKEND:$IMAGE_TAG .
       - docker tag $IMAGE_REPO_NAME_BACKEND:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME_BACKEND:$IMAGE_TAG
-      - echo "Pushing the backend Docker image to ECR..."
-      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME_BACKEND:$IMAGE_TAG
-      - cd ..
-
-      # 프론트엔드 이미지 빌드 및 푸시
-      - echo "Building the frontend Docker image..."
-      - cd book/frontend
-      - docker build -t $IMAGE_REPO_NAME_FRONTEND:$IMAGE_TAG .
-      - docker tag $IMAGE_REPO_NAME_FRONTEND:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME_FRONTEND:$IMAGE_TAG
-      - echo "Pushing the frontend Docker image to ECR..."
-      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME_FRONTEND:$IMAGE_TAG
-      - cd ../..
 
   post_build:
     commands:
-      - echo "Build completed on $(date)"
-      # EKS 배포 단계에서 참조할 이미지 정의 파일 생성
-      - printf '[{"name":"backend-image","imageUri":"%s"},{"name":"frontend-image","imageUri":"%s"}]' $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME_BACKEND:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME_FRONTEND:$IMAGE_TAG > imagedefinitions.json
+      - echo "Pushing Images..."
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME_BACKEND:$IMAGE_TAG
+      
+      # [프론트엔드 도커 빌드] 프론트엔드 폴더로 이동해서 처리
+      - cd frontend
+      - docker build -t $IMAGE_REPO_NAME_FRONTEND:$IMAGE_TAG .
+      - docker tag $IMAGE_REPO_NAME_FRONTEND:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME_FRONTEND:$IMAGE_TAG
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME_FRONTEND:$IMAGE_TAG
 
 artifacts:
   files:
-    - imagedefinitions.json
+    - '**/*'
+  base-directory: 'build/libs' #
