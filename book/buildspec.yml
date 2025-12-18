@@ -20,21 +20,29 @@ phases:
   build:
     commands:
       - echo "Build phase started..."
-      # 프론트엔드 빌드
+      # 1. 프론트엔드 빌드
       - cd frontend && npm install && npm run build && cd ..
-      # 백엔드 빌드 (jar 생성)
+      
+      # 2. 백엔드 JAR 빌드
       - ./gradlew build -x test
-      # 백엔드 이미지 빌드 (경로를 '.'으로 수정)
+      
+      # 3. 백엔드 도커 이미지 빌드 (중요: book 폴더로 이동)
       - echo "Building the backend Docker image..."
+      # 만약 Dockerfile이 book 안에 있다면 cd book이 필요합니다.
+      # 하지만 Dockerfile이 루트에 있고 파일 내부에서 book을 참조한다면 아래 명령어만 필요합니다.
+      # 사용자님의 분석에 따라 book 폴더로 들어가서 빌드하는 방식을 적용합니다.
+      - cd book
       - docker build -t $IMAGE_REPO_NAME_BACKEND:$IMAGE_TAG .
       - docker tag $IMAGE_REPO_NAME_BACKEND:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME_BACKEND:$IMAGE_TAG
+      - cd ..
 
   post_build:
     commands:
       - echo "Pushing Images to ECR..."
-      # 백엔드 이미지 푸시
+      # 백엔드 푸시
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME_BACKEND:$IMAGE_TAG
-      # 프론트엔드 이미지 빌드 및 푸시
+      
+      # 4. 프론트엔드 도커 이미지 빌드 및 푸시
       - cd frontend
       - docker build -t $IMAGE_REPO_NAME_FRONTEND:$IMAGE_TAG .
       - docker tag $IMAGE_REPO_NAME_FRONTEND:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME_FRONTEND:$IMAGE_TAG
@@ -42,6 +50,5 @@ phases:
 
 artifacts:
   files:
-    - '*.jar'  # base-directory 기준의 파일명만 작성
-  base-directory: 'build/libs' #
+    - 'build/libs/*.jar'
   discard-paths: yes
