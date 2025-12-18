@@ -6,29 +6,37 @@ phases:
       java: corretto17
       nodejs: 20
     commands:
-      - echo "Install phase..."
-      - chmod +x ./gradlew # 루트에 있으므로 바로 실행 가능
+      - echo "Current directory check..."
+      - ls -al  # 파일 목록을 로그에 출력하여 위치를 확인합니다.
+      - echo "Granting execute permission to gradlew..."
+      # 파일이 루트에 있으므로 바로 실행 권한을 부여합니다.
+      - chmod +x gradlew || echo "gradlew not found at root"
+
   pre_build:
     commands:
+      - echo "Pre-build phase..."
       - export IMAGE_TAG=$(date +%Y%m%d%H%M%S)
       - echo "Logging in to Amazon ECR..."
       - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+
   build:
     commands:
       - echo "Building Backend..."
-      - ./gradlew build -x test # 루트에서 백엔드 빌드 실행
+      # 루트에 있는 gradlew로 빌드를 수행합니다.
+      - ./gradlew build -x test
       
-      # [백엔드 도커 빌드] Dockerfile이 루트에 있으므로 마침표(.) 하나면 끝납니다.
-      - echo "Building the backend Docker image..."
+      # 백엔드 이미지 빌드 (Dockerfile이 루트에 있으므로 '.' 사용)
+      - echo "Building Backend Docker Image..."
       - docker build -t $IMAGE_REPO_NAME_BACKEND:$IMAGE_TAG .
       - docker tag $IMAGE_REPO_NAME_BACKEND:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME_BACKEND:$IMAGE_TAG
 
   post_build:
     commands:
-      - echo "Pushing Images..."
+      - echo "Pushing Backend Image..."
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME_BACKEND:$IMAGE_TAG
       
-      # [프론트엔드 도커 빌드] 프론트엔드 폴더로 이동해서 처리
+      # 프론트엔드 이미지 빌드 (frontend 폴더가 있는 경우)
+      - echo "Building Frontend Docker Image..."
       - cd frontend
       - docker build -t $IMAGE_REPO_NAME_FRONTEND:$IMAGE_TAG .
       - docker tag $IMAGE_REPO_NAME_FRONTEND:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME_FRONTEND:$IMAGE_TAG
@@ -37,4 +45,4 @@ phases:
 artifacts:
   files:
     - '**/*'
-  base-directory: 'build/libs' #
+  base-directory: 'build/libs'
