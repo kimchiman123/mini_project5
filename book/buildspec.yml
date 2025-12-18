@@ -32,6 +32,22 @@ phases:
   post_build:
     commands:
       - echo "Build completed on `date`"
+      - echo "Logging in to Amazon ECR..."
+      # ECR 로그인
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+      
+      - echo "Building and Pushing Backend Image..."
+      # 백엔드 도커 빌드 및 푸시
+      - docker build -t $IMAGE_REPO_NAME_BACKEND .
+      - docker tag $IMAGE_REPO_NAME_BACKEND:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME_BACKEND:latest
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME_BACKEND:latest
+
+      - echo "Building and Pushing Frontend Image..."
+      # 프론트엔드 도커 빌드 및 푸시 (frontend 폴더에 Dockerfile이 있는 경우)
+      - cd frontend
+      - docker build -t $IMAGE_REPO_NAME_FRONTEND .
+      - docker tag $IMAGE_REPO_NAME_FRONTEND:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME_FRONTEND:latest
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME_FRONTEND:latest
 
 artifacts:
   files:
