@@ -12,10 +12,8 @@ phases:
   pre_build:
     commands:
       - echo "Pre-build phase started..."
-      # 이미지 태그 생성 (날짜와 시간 사용)
+      # 이미지 태그 생성
       - export IMAGE_TAG=$(date +%Y%m%d%H%M%S)
-      - echo "IMAGE_TAG is $IMAGE_TAG"
-      # ECR 로그인
       - echo "Logging in to Amazon ECR..."
       - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
 
@@ -24,18 +22,19 @@ phases:
       - echo "Build phase started..."
       # 프론트엔드 빌드
       - cd frontend && npm install && npm run build && cd ..
-      # 백엔드 빌드
+      # 백엔드 빌드 (jar 생성)
       - ./gradlew build -x test
-      # 도커 이미지 빌드 (태그 문제 해결)
+      # 백엔드 이미지 빌드 (경로를 '.'으로 수정)
+      - echo "Building the backend Docker image..."
       - docker build -t $IMAGE_REPO_NAME_BACKEND:$IMAGE_TAG .
       - docker tag $IMAGE_REPO_NAME_BACKEND:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME_BACKEND:$IMAGE_TAG
 
   post_build:
     commands:
-      - echo "Pushing Images..."
-      # 백엔드 푸시
+      - echo "Pushing Images to ECR..."
+      # 백엔드 이미지 푸시
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME_BACKEND:$IMAGE_TAG
-      # 프론트엔드 빌드 및 푸시 (필요 시)
+      # 프론트엔드 이미지 빌드 및 푸시
       - cd frontend
       - docker build -t $IMAGE_REPO_NAME_FRONTEND:$IMAGE_TAG .
       - docker tag $IMAGE_REPO_NAME_FRONTEND:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME_FRONTEND:$IMAGE_TAG
@@ -43,5 +42,6 @@ phases:
 
 artifacts:
   files:
-    - '**/*'
-  base-directory: 'build/libs'
+    - '*.jar'  # base-directory 기준의 파일명만 작성
+  base-directory: 'build/libs' #
+  discard-paths: yes
