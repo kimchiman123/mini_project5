@@ -6,41 +6,49 @@ phases:
       java: corretto17
       nodejs: 20
     commands:
-      - echo "Checking files in root..."
-      - ls -al  # 루트에 파일이 있는지 로그로 확인
-      - echo "Fixing Windows line endings..."
-      - sed -i 's/\r$//' gradlew  # 윈도우 줄바꿈 문자 제거 (필수)
-      - chmod +x gradlew          # 실행 권한 부여
+      - echo "=== 디렉토리 구조 확인 (디버깅용) ==="
+      - ls -R  # 모든 폴더와 파일을 다 보여줍니다. (로그 확인 필수)
+      
+      - echo "=== gradlew 파일 찾아서 줄바꿈 변환 ==="
+      # find 명령어로 gradlew가 어디에 있든 찾아서 sed 명령을 실행합니다.
+      - find . -name "gradlew" -type f -exec sed -i 's/\r$//' {} \;
+      
+      - echo "=== gradlew 실행 권한 부여 ==="
+      # 마찬가지로 찾아서 실행 권한을 줍니다.
+      - find . -name "gradlew" -type f -exec chmod +x {} \;
 
   pre_build:
     commands:
-      - echo "Logging in to Amazon ECR..."
+      - echo "Pre-build phase..."
       - export IMAGE_TAG=$(date +%Y%m%d%H%M%S)
       - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
 
   build:
     commands:
-      - echo "Building Backend (Gradle)..."
-      - ./gradlew build -x test   # 루트의 gradlew 실행
+      - echo "=== Backend 빌드 시작 ==="
+      # gradlew 파일 경로를 변수에 저장합니다.
+      - GRADLE_PATH=$(find . -name "gradlew" -type f | head -n 1)
+      - echo "Found gradlew at: $GRADLE_PATH"
       
-      - echo "Building Backend Docker Image..."
-      # 루트의 Dockerfile을 사용하므로 경로(.)가 정확함
+      # 해당 경로로 이동해서 빌드를 실행합니다.
+      - DIR_PATH=$(dirname "$GRADLE_PATH")
+      - cd "$DIR_PATH"
+      - ./gradlew build -x test
+      
+      - echo "=== Docker 이미지 빌드 ==="
+      # Dockerfile도 같은 위치에 있다고 가정하고 빌드합니다.
       - docker build -t $IMAGE_REPO_NAME_BACKEND:$IMAGE_TAG .
       - docker tag $IMAGE_REPO_NAME_BACKEND:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME_BACKEND:$IMAGE_TAG
       
-      - echo "Pushing Backend Image..."
-      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME_BACKEND:$IMAGE_TAG
-
-      # 프론트엔드가 있다면 주석 해제 후 사용
-      # - cd frontend
-      # - docker build -t $IMAGE_REPO_NAME_FRONTEND:$IMAGE_TAG .
-      # - docker push ...
+      # 푸시를 위해 다시 이미지 태그 작업 (경로 문제 방지)
+      - cd -  # 원래 위치로 복귀 (선택 사항이나 안전을 위해)
 
   post_build:
     commands:
-      - echo "Creating imagedefinitions.json for k8s..."
+      - echo "=== 이미지 푸시 ==="
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME_BACKEND:$IMAGE_TAG
       - printf '[{"name":"backend-image","imageUri":"%s"}]' "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME_BACKEND:$IMAGE_TAG" > imagedefinitions.json
 
 artifacts:
   files:
-    - imagedefinitions.json
+    - '**/*'
