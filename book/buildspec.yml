@@ -3,59 +3,45 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      java: corretto17  # 프로젝트에 맞는 Java 버전을 명시합니다.
-      nodejs: 20       # 프로젝트에 맞는 Node.js 버전을 명시합니다.
+      java: corretto17
+      nodejs: 20
     commands:
       - echo "Install phase started..."
-      # Gradle Wrapper 실행 권한 부여
       - chmod +x ./gradlew
 
   pre_build:
     commands:
       - echo "Pre-build phase started..."
-      # 프론트엔드 디렉토리로 이동하여 npm 패키지 설치
-      - cd frontend
-      - npm install
+      # 이미지 태그 생성 (날짜와 시간 사용)
+      - export IMAGE_TAG=$(date +%Y%m%d%H%M%S)
+      - echo "IMAGE_TAG is $IMAGE_TAG"
+      # ECR 로그인
+      - echo "Logging in to Amazon ECR..."
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
 
   build:
     commands:
       - echo "Build phase started..."
-      # Next.js 프론트엔드 빌드
-      - echo "Building Next.js frontend..."
-      - npm run build
-      - cd .. 
-      # 백엔드 Gradle 빌드 (테스트 포함)
-      # 'build' 태스크는 'test'를 포함하므로, 테스트가 자동으로 실행됩니다.
-      - echo "Building Spring Boot backend with Gradle..."
-      - ./gradlew build
+      # 프론트엔드 빌드
+      - cd frontend && npm install && npm run build && cd ..
+      # 백엔드 빌드
+      - ./gradlew build -x test
+      # 도커 이미지 빌드 (태그 문제 해결)
+      - docker build -t $IMAGE_REPO_NAME_BACKEND:$IMAGE_TAG .
+      - docker tag $IMAGE_REPO_NAME_BACKEND:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME_BACKEND:$IMAGE_TAG
 
   post_build:
     commands:
-      - echo "Build completed on `date`"
-      - echo "Logging in to Amazon ECR..."
-      # ECR 로그인
-      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
-      
-      - echo "Building and Pushing Backend Image..."
-      # 백엔드 도커 빌드 및 푸시
-      - docker build -t $IMAGE_REPO_NAME_BACKEND .
-      - docker tag $IMAGE_REPO_NAME_BACKEND:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME_BACKEND:latest
-      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME_BACKEND:latest
-
-      - echo "Building and Pushing Frontend Image..."
-      # 프론트엔드 도커 빌드 및 푸시 (frontend 폴더에 Dockerfile이 있는 경우)
+      - echo "Pushing Images..."
+      # 백엔드 푸시
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME_BACKEND:$IMAGE_TAG
+      # 프론트엔드 빌드 및 푸시 (필요 시)
       - cd frontend
-      - docker build -t $IMAGE_REPO_NAME_FRONTEND .
-      - docker tag $IMAGE_REPO_NAME_FRONTEND:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME_FRONTEND:latest
-      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME_FRONTEND:latest
+      - docker build -t $IMAGE_REPO_NAME_FRONTEND:$IMAGE_TAG .
+      - docker tag $IMAGE_REPO_NAME_FRONTEND:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME_FRONTEND:$IMAGE_TAG
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME_FRONTEND:$IMAGE_TAG
 
 artifacts:
   files:
-    # 빌드 결과물인 JAR 파일을 지정합니다.
-    - build/libs/*.jar
-    # CodeDeploy 사용 시 appspec.yml도 포함할 수 있습니다.
-    # - appspec.yml
-  # S3에 업로드될 아티팩트 파일들이 위치할 기본 경로를 지정합니다.
-  # 'discard-paths: yes' 옵션은 여기 지정된 경로(build/libs)를 최종 아티팩트 zip에서 제거해줍니다.
+    - '**/*'
   base-directory: 'build/libs'
-  discard-paths: yes
