@@ -2,8 +2,6 @@ version: 0.2
 
 env:
   variables:
-    # 이 환경 변수들은 CodePipeline 환경 변수 설정에서 지정해야 합니다.
-    # AWS_ACCOUNT_ID, AWS_DEFAULT_REGION, IMAGE_REPO_NAME_BACKEND, IMAGE_REPO_NAME_FRONTEND
     IMAGE_TAG: "latest"
 
 phases:
@@ -13,7 +11,6 @@ phases:
       nodejs: 20
     commands:
       - echo "Install phase: Fixing line endings and setting permissions for gradlew."
-      # Windows에서 생성된 파일의 줄바꿈 문자(\r)를 제거하고 실행 권한을 부여합니다.
       - sed -i 's/\r$//' ./book/gradlew
       - chmod +x ./book/gradlew
 
@@ -28,15 +25,11 @@ phases:
   build:
     commands:
       - echo "Build phase started..."
-      
-      # 1. 백엔드 Docker 이미지 빌드 및 푸시
       - echo "Building the backend Docker image..."
       - docker build -t $IMAGE_REPO_NAME_BACKEND:$IMAGE_TAG -f ./book/Dockerfile ./book
       - docker tag $IMAGE_REPO_NAME_BACKEND:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME_BACKEND:$IMAGE_TAG
       - echo "Pushing the backend Docker image to ECR..."
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME_BACKEND:$IMAGE_TAG
-
-      # 2. 프론트엔드 Docker 이미지 빌드 및 푸시
       - echo "Building the frontend Docker image..."
       - docker build -t $IMAGE_REPO_NAME_FRONTEND:$IMAGE_TAG -f ./book/frontend/Dockerfile ./book/frontend
       - docker tag $IMAGE_REPO_NAME_FRONTEND:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME_FRONTEND:$IMAGE_TAG
@@ -46,7 +39,6 @@ phases:
   post_build:
     commands:
       - echo "Build completed on $(date)"
-      # EKS 배포 단계에서 이미지 URI 정보를 전달하기 위한 imagedefinitions.json 파일 생성
       - printf '[{"name":"backend-image","imageUri":"%s"},{"name":"frontend-image","imageUri":"%s"}]' "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME_BACKEND:$IMAGE_TAG" "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME_FRONTEND:$IMAGE_TAG" > imagedefinitions.json
 
 artifacts:
