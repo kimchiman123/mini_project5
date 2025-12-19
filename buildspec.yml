@@ -18,7 +18,7 @@ phases:
       - echo "=== Backend 빌드 & 테스트 (검증) ==="
       # gradlew 위치를 변수에 저장
       - GRADLE_PATH=$(find . -name "gradlew" -type f | head -n 1)
-      - echo "Found gradlew at: $GRADLE_PATH"
+      - "echo Found gradlew at: $GRADLE_PATH"
       # gradlew가 있는 폴더로 이동
       - DIR_PATH=$(dirname "$GRADLE_PATH")
       - cd "$DIR_PATH"
