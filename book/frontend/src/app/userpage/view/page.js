@@ -47,7 +47,7 @@ export default function MyPageView() {
                 const userId = parsed.userId;
 
                 const response = await fetch(
-                    `http://localhost/api/book/list/my?userId=${userId}`,
+                    `/api/book/list/my?userId=${userId}`,
                     {
                         method: "GET",
                         headers: {
@@ -92,7 +92,7 @@ export default function MyPageView() {
                     description: item.content ?? "",
                     image:
                         item.coverImageUrl
-                            ? `${item.coverImageUrl.startsWith('http') ? item.coverImageUrl : `http://localhost/api${item.coverImageUrl}`}`
+                            ? `${item.coverImageUrl.startsWith('http') ? item.coverImageUrl : `/api${item.coverImageUrl}`}`
                             : "https://via.placeholder.com/140x200?text=No+Image",
 
                 }));
@@ -122,7 +122,7 @@ export default function MyPageView() {
 
         try {
             const response = await fetch(
-                `http://localhost/api/book/delete/${idToDelete}`,
+                `/api/book/delete/${idToDelete}`,
                 {
                     method: "DELETE",
                     // 백엔드에서 아직 토큰 안 쓰면 헤더는 생략해도 됨
@@ -187,7 +187,7 @@ export default function MyPageView() {
                 title: editingWork.title,
                 content: editingWork.description,
                 author: editingWork.author,
-                coverImageUrl: editingWork.image?.replace("http://localhost/api", "")
+                coverImageUrl: editingWork.image?.replace("/api", "")
             });
 
             formData.append("book", new Blob([bookJson], { type: "application/json" }));
@@ -203,7 +203,7 @@ export default function MyPageView() {
 
             // 5) PUT 요청 보내기
             const response = await fetch(
-                `http://localhost/api/book/update/${editingWork.id}`,
+                `/api/book/update/${editingWork.id}`,
                 {
                     method: "PUT",
                     body: formData, // ★ Content-Type 설정하면 안됨(브라우저가 자동 설정)
