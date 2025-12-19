@@ -11,8 +11,18 @@ permissions:
     owner: ec2-user
     group: ec2-user
     mode: 755
+  - object: /home/ec2-user/mini_project5/scripts/install_dependencies.sh
+    pattern: "**"
+    owner: ec2-user
+    group: ec2-user
+    mode: 755
 
 hooks:
+  AfterInstall:
+    - location: scripts/install_dependencies.sh
+      timeout: 300
+      runas: root
+
   ApplicationStart:
     - location: scripts/deploy.sh
       timeout: 300
