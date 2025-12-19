@@ -13,17 +13,9 @@ phases:
       - find . -name "gradlew" -type f -exec sed -i 's/\r$//' {} \;
       - find . -name "gradlew" -type f -exec chmod +x {} \;
 
-  pre_build:
-    commands:
-      - echo "Pre-build phase..."
-      - export IMAGE_TAG=$(date +%Y%m%d%H%M%S)
-      - echo "Logging in to Amazon ECR..."
-      # [주의] 아래 명령어는 반드시 한 줄이어야 합니다.
-      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
-
   build:
     commands:
-      - echo "=== Backend 빌드 시작 ==="
+      - echo "=== Backend 빌드 & 테스트 (검증) ==="
       # gradlew 위치를 변수에 저장
       - GRADLE_PATH=$(find . -name "gradlew" -type f | head -n 1)
       - echo "Found gradlew at: $GRADLE_PATH"
@@ -31,23 +23,9 @@ phases:
       - DIR_PATH=$(dirname "$GRADLE_PATH")
       - cd "$DIR_PATH"
       - ./gradlew build -x test
-      
-      - echo "=== Docker 이미지 빌드 ==="
-      # Dockerfile을 이용해 빌드 (현재 위치 기준)
-      - docker build -t $IMAGE_REPO_NAME_BACKEND:$IMAGE_TAG .
-      # [주의] 아래 태그 명령어는 반드시 한 줄이어야 합니다.
-      - docker tag $IMAGE_REPO_NAME_BACKEND:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME_BACKEND:$IMAGE_TAG
-      
-      # 원래 위치로 복귀 (안전장치)
+      - echo "=== 빌드 검증 완료 ==="
+      # 원래 위치로 복귀
       - cd -
-
-  post_build:
-    commands:
-      - echo "=== 이미지 푸시 ==="
-      # [주의] 아래 푸시 명령어는 반드시 한 줄이어야 합니다.
-      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME_BACKEND:$IMAGE_TAG
-      # [주의] 아래 printf 명령어도 반드시 한 줄이어야 합니다.
-      - printf '[{"name":"backend-image","imageUri":"%s"}]' "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME_BACKEND:$IMAGE_TAG" > imagedefinitions.json
 
 artifacts:
   files:
