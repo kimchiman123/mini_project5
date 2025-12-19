@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # 프로젝트 디렉토리로 이동
-cd /home/ubuntu/mini_project5
+cd /home/ec2-user/mini_project5
 
 # 기존 컨테이너 중지 및 제거 (볼륨은 유지)
 echo "Stopping existing containers..."
