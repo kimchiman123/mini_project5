@@ -3,8 +3,8 @@
 // useState 외에 필요한 컴포넌트들을 mui에서 import 합니다.
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { 
-    Box, Typography, Stack, CardMedia, Button, 
+import {
+    Box, Typography, Stack, CardMedia, Button,
     Dialog, DialogTitle, DialogContent, DialogActions, TextField,
     CircularProgress // For loading indicator when fetching list
 } from "@mui/material";
@@ -16,10 +16,10 @@ export default function MyPageView() {
     const router = useRouter();
     const [works, setWorks] = useState([]); // 초기 상태를 빈 배열로 변경
     const [loading, setLoading] = useState(true); // 목록 로딩 상태 추가
-    
+
     // --- 모달 관련 상태 추가 ---
-    const [isModalOpen, setIsModalOpen] = useState(false); 
-    const [editingWork, setEditingWork] = useState(null); 
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [editingWork, setEditingWork] = useState(null);
     const alertShown = useRef(false);
 
     // --- 작품 목록 불러오기 (GET /book/list) ---
@@ -47,7 +47,7 @@ export default function MyPageView() {
                 const userId = parsed.userId;
 
                 const response = await fetch(
-                    `http://localhost:8080/book/list/my?userId=${userId}`,
+                    `http://localhost/api/book/list/my?userId=${userId}`,
                     {
                         method: "GET",
                         headers: {
@@ -92,7 +92,7 @@ export default function MyPageView() {
                     description: item.content ?? "",
                     image:
                         item.coverImageUrl
-                            ? `http://localhost:8080${item.coverImageUrl}`
+                            ? `${item.coverImageUrl.startsWith('http') ? item.coverImageUrl : `http://localhost/api${item.coverImageUrl}`}`
                             : "https://via.placeholder.com/140x200?text=No+Image",
 
                 }));
@@ -122,7 +122,7 @@ export default function MyPageView() {
 
         try {
             const response = await fetch(
-                `http://localhost:8080/book/delete/${idToDelete}`,
+                `http://localhost/api/book/delete/${idToDelete}`,
                 {
                     method: "DELETE",
                     // 백엔드에서 아직 토큰 안 쓰면 헤더는 생략해도 됨
@@ -187,7 +187,7 @@ export default function MyPageView() {
                 title: editingWork.title,
                 content: editingWork.description,
                 author: editingWork.author,
-                coverImageUrl: editingWork.image?.replace("http://localhost:8080", "")
+                coverImageUrl: editingWork.image?.replace("http://localhost/api", "")
             });
 
             formData.append("book", new Blob([bookJson], { type: "application/json" }));
@@ -203,7 +203,7 @@ export default function MyPageView() {
 
             // 5) PUT 요청 보내기
             const response = await fetch(
-                `http://localhost:8080/book/update/${editingWork.id}`,
+                `http://localhost/api/book/update/${editingWork.id}`,
                 {
                     method: "PUT",
                     body: formData, // ★ Content-Type 설정하면 안됨(브라우저가 자동 설정)
@@ -329,7 +329,7 @@ export default function MyPageView() {
                     </Box>
                 ))}
             </Stack>
-            
+
             {editingWork && (
                 <Dialog open={isModalOpen} onClose={handleCloseModal} fullWidth maxWidth="sm">
                     <DialogTitle sx={{ fontWeight: 700 }}>작품 정보 수정</DialogTitle>

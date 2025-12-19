@@ -32,7 +32,7 @@ export default function AppLayout({ children }) {
     useEffect(() => {
         const checkSession = async () => {
             try {
-                const res = await fetch("http://localhost:8080/user/me", {
+                const res = await fetch("/api/user/me", {
                     method: "GET",
                     credentials: "include",  // 세션 쿠키 포함
                 });
@@ -71,7 +71,7 @@ export default function AppLayout({ children }) {
         if (!ok) return;
 
         try {
-            await fetch("http://localhost:8080/user/logout", {
+            await fetch("/api/user/logout", {
                 method: "POST",
                 credentials: "include",
             });

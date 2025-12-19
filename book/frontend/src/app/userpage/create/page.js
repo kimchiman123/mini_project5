@@ -123,7 +123,7 @@ export default function CreateWork() {
             coverImageUrl: imageUrl, // URL만 보내면 됨!
         };
 
-        const response = await fetch(`http://localhost:8080/book/insertByUrl?userId=${userData.userId}`, {
+        const response = await fetch(`/api/book/insertByUrl?userId=${userData.userId}`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(bookData),
@@ -155,16 +155,16 @@ export default function CreateWork() {
                     </Typography>
 
                     <TextField label="작품 제목" name="title" fullWidth sx={{ mb: 3 }}
-                               value={form.title} onChange={handleFormChange} />
+                        value={form.title} onChange={handleFormChange} />
 
                     <TextField label="작가명" name="author" fullWidth sx={{ mb: 3 }}
-                               value={form.author} onChange={handleFormChange} />
+                        value={form.author} onChange={handleFormChange} />
 
                     <TextField label="카테고리" name="category" fullWidth sx={{ mb: 3 }}
-                               value={form.category} onChange={handleFormChange} />
+                        value={form.category} onChange={handleFormChange} />
 
                     <TextField label="내용" name="content" fullWidth multiline minRows={6}
-                               sx={{ mb: 3 }} value={form.content} onChange={handleFormChange} />
+                        sx={{ mb: 3 }} value={form.content} onChange={handleFormChange} />
                 </Grid>
 
                 {/* 오른쪽: 표지 이미지 생성 */}

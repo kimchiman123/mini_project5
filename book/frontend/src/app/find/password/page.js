@@ -20,7 +20,7 @@ export default function FindPasswordPage() {
         setTempPassword(null);
 
         try {
-            const response = await fetch("http://localhost:8080/user/find-pw", {
+            const response = await fetch("/api/user/find-pw", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

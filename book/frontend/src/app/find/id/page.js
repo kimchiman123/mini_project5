@@ -19,7 +19,7 @@ export default function FindIdPage() {
         setEmailResult(null);
 
         try {
-            const response = await fetch("http://localhost:8080/user/find-id", {
+            const response = await fetch("/api/user/find-id", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ name, phone }),

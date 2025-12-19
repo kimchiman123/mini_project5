@@ -11,7 +11,7 @@ export default function LoginPage() {
         console.log("로그인 시도:", { email, password });
 
         try {
-            const response = await fetch("http://localhost:8080/user/login", {
+            const response = await fetch("/api/user/login", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -94,7 +94,7 @@ export default function LoginPage() {
                         <Link href="/signup">
                             <button style={styles.subButton}>✔ 회원가입</button>
                         </Link>
-                        <button style={styles.subButton} onClick={() => window.location.href="/find/id"}>
+                        <button style={styles.subButton} onClick={() => window.location.href = "/find/id"}>
                             ✔ ID/PW 찾기
                         </button>
                     </div>

@@ -14,7 +14,7 @@ export default function MainPage() {
     const defaultKeyword = "소설";
 
     useEffect(() => {
-        fetch(`http://localhost:8080/books/search?keyword=${encodeURIComponent(defaultKeyword)}`)
+        fetch(`/api/books/search?keyword=${encodeURIComponent(defaultKeyword)}`)
             .then((res) => res.json())
             .then((data) => {
                 console.log("📘 크롤링 데이터:", data);
