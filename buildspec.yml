@@ -6,16 +6,16 @@ phases:
       java: corretto17
       nodejs: 20
     commands:
-      - echo "=== Environment Setup: Install kubectl ==="
+      - echo "Environment Setup - Install kubectl"
       - curl -O https://s3.us-west-2.amazonaws.com/amazon-eks/1.27.1/2023-04-19/bin/linux/amd64/kubectl
       - chmod +x ./kubectl
       - mv ./kubectl /usr/local/bin/
-      - echo "=== Grant gradlew permissions ==="
+      - echo "Grant gradlew permissions"
       - find . -name "gradlew" -type f -exec chmod +x {} \;
 
   pre_build:
     commands:
-      - echo "=== ECR Login ==="
+      - echo "ECR Login"
       - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 416225317325.dkr.ecr.us-east-1.amazonaws.com
       - REPO_BACKEND=416225317325.dkr.ecr.us-east-1.amazonaws.com/ai0102-back
       - REPO_FRONTEND=416225317325.dkr.ecr.us-east-1.amazonaws.com/ai0102-front
@@ -24,14 +24,14 @@ phases:
 
   build:
     commands:
-      - echo "=== Build Backend (Gradle + Docker) ==="
+      - echo "Build Backend"
       - cd book
       - ./gradlew clean build -x test
       - docker build -t $REPO_BACKEND:latest .
       - docker tag $REPO_BACKEND:latest $REPO_BACKEND:$IMAGE_TAG
       - cd ..
 
-      - echo "=== Build Frontend (Docker) ==="
+      - echo "Build Frontend"
       - cd book/frontend
       - docker build -t $REPO_FRONTEND:latest .
       - docker tag $REPO_FRONTEND:latest $REPO_FRONTEND:$IMAGE_TAG
@@ -39,16 +39,16 @@ phases:
 
   post_build:
     commands:
-      - echo "=== Push images to ECR ==="
+      - echo "Push images to ECR"
       - docker push $REPO_BACKEND:latest
       - docker push $REPO_BACKEND:$IMAGE_TAG
       - docker push $REPO_FRONTEND:latest
       - docker push $REPO_FRONTEND:$IMAGE_TAG
       
-      - echo "=== Deploy to EKS ==="
+      - echo "Deploy to EKS"
       - aws eks update-kubeconfig --name ai0102-EKS --region us-east-1
       - kubectl apply -f k8s-deployment.yaml
-      - echo "=== Deployment Complete ==="
+      - echo "Deployment Complete"
 
 artifacts:
   files:
