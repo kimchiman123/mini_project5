@@ -1,6 +1,7 @@
 # 빌드는 CodeBuild(buildspec.yml)에서 이미 수행됨
 # Docker Hub Rate Limit 회피를 위해 Public ECR 사용
-FROM public.ecr.aws/eclipse/temurin:17-jre-jammy
+FROM public.ecr.aws/amazoncorretto/amazoncorretto:17-al2-jdk
+
 
 WORKDIR /app
 

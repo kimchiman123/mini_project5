@@ -1,6 +1,6 @@
 # Stage 1: Build the application
 # Docker Hub Rate Limit 회피를 위해 Public ECR의 Node 이미지 사용
-FROM public.ecr.aws/docker/library/node:20.18.0-alpine AS builder
+FROM public.ecr.aws/docker/library/node:20-alpine AS builder
 
 WORKDIR /app
 
@@ -15,7 +15,7 @@ COPY . .
 RUN npm run build
 
 # Stage 2: Run the application
-FROM public.ecr.aws/docker/library/node:20.18.0-alpine AS runner
+FROM public.ecr.aws/docker/library/node:20-alpine AS runner
 
 WORKDIR /app
 
