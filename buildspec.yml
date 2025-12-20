@@ -6,26 +6,51 @@ phases:
       java: corretto17
       nodejs: 20
     commands:
-      - echo "=== 디렉토리 및 파일 확인 ==="
-      - ls -R
-      - echo "=== gradlew 찾아서 줄바꿈 변환 ==="
-      # find 명령어로 위치에 상관없이 gradlew를 찾아 수정합니다.
-      - find . -name "gradlew" -type f -exec sed -i 's/\r$//' {} \;
+      - echo "=== 연?환경 준비: kubectl 설치 ==="
+      - curl -O https://s3.us-west-2.amazonaws.com/amazon-eks/1.27.1/2023-04-19/bin/linux/amd64/kubectl
+      - chmod +x ./kubectl
+      - mv ./kubectl /usr/local/bin/
+      - echo "=== gradlew 권한 설정 ==="
       - find . -name "gradlew" -type f -exec chmod +x {} \;
+
+  pre_build:
+    commands:
+      - echo "=== ECR 로그인 ==="
+      - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 416225317325.dkr.ecr.us-east-1.amazonaws.com
+      - REPO_BACKEND=416225317325.dkr.ecr.us-east-1.amazonaws.com/ai0102-back
+      - REPO_FRONTEND=416225317325.dkr.ecr.us-east-1.amazonaws.com/ai0102-front
+      - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+      - IMAGE_TAG=${COMMIT_HASH:=latest}
 
   build:
     commands:
-      - echo "=== Backend 빌드 & 테스트 (검증) ==="
-      # gradlew 위치를 변수에 저장
-      - GRADLE_PATH=$(find . -name "gradlew" -type f | head -n 1)
-      - "echo Found gradlew at: $GRADLE_PATH"
-      # gradlew가 있는 폴더로 이동
-      - DIR_PATH=$(dirname "$GRADLE_PATH")
-      - cd "$DIR_PATH"
-      - ./gradlew build -x test
-      - echo "=== 빌드 검증 완료 ==="
-      # 원래 위치로 복귀
-      - cd -
+      - echo "=== Backend 빌드 (Gradle + Docker) ==-"
+      # Gradle 빌드는 Dockerfile 내부에서 처리하거나 여기서 미리 할 수 있음. 
+      # 기존 buildspec을 참고하여 여기서 빌드함.
+      - cd book
+      - ./gradlew clean build -x test
+      - docker build -t $REPO_BACKEND:latest .
+      - docker tag $REPO_BACKEND:latest $REPO_BACKEND:$IMAGE_TAG
+      - cd ..
+
+      - echo "=== Frontend 빌드 (Docker) ==="
+      - cd book/frontend
+      - docker build -t $REPO_FRONTEND:latest .
+      - docker tag $REPO_FRONTEND:latest $REPO_FRONTEND:$IMAGE_TAG
+      - cd ../..
+
+  post_build:
+    commands:
+      - echo "=== ECR에 이미지 푸시 ==="
+      - docker push $REPO_BACKEND:latest
+      - docker push $REPO_BACKEND:$IMAGE_TAG
+      - docker push $REPO_FRONTEND:latest
+      - docker push $REPO_FRONTEND:$IMAGE_TAG
+      
+      - echo "=== EKS 배포진행 ==="
+      - aws eks update-kubeconfig --name ai0102-EKS --region us-east-1
+      - kubectl apply -f k8s-deployment.yaml
+      - echo "=== 배포 완료 ==="
 
 artifacts:
   files:

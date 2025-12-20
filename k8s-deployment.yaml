@@ -1,0 +1,240 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: db-secret
+type: Opaque
+stringData:
+  # 보안상 실제 운영 환경에서는 AWS Secrets Manager 등을 권장합니다.
+  username: postgres
+  password: password
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-config
+data:
+  nginx.conf: |
+    server {
+        listen 80;
+        server_name localhost;
+
+        # Proxy Frontend requests
+        location / {
+            proxy_pass http://frontend:3000;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+
+        # Next.js API Routes
+        location /api/generateCover {
+            proxy_pass http://frontend:3000;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+
+        # Backend (Spring Boot)
+        location /api/ {
+            rewrite ^/api/(.*)$ /$1 break;
+            proxy_pass http://backend:8080;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+    }
+
+---
+# Database Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: db
+spec:
+  ports:
+    - port: 5432
+      targetPort: 5432
+  selector:
+    app: db
+  clusterIP: None # Headless Service for StatefulSet
+
+---
+# Database StatefulSet
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: db
+spec:
+  serviceName: "db"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db
+  template:
+    metadata:
+      labels:
+        app: db
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:15-alpine
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              value: bookdb
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: username
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: password
+          volumeMounts:
+            - name: db-data
+              mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+    - metadata:
+        name: db-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 10Gi
+        # EBS CSI 드라이버가 설치되어 있으므로 기본 StorageClass(gp2/gp3)를 사용하면 됩니다.
+
+---
+# Backend Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+spec:
+  ports:
+    - port: 8080
+      targetPort: 8080
+  selector:
+    app: backend
+
+---
+# Backend Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+        - name: backend
+          image: 416225317325.dkr.ecr.us-east-1.amazonaws.com/ai0102-back:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:postgresql://db:5432/bookdb
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: username
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: password
+            - name: SPRING_JPA_HIBERNATE_DDL_AUTO
+              value: update
+
+---
+# Frontend Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+spec:
+  ports:
+    - port: 3000
+      targetPort: 3000
+  selector:
+    app: frontend
+
+---
+# Frontend Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+        - name: frontend
+          image: 416225317325.dkr.ecr.us-east-1.amazonaws.com/ai0102-front:latest
+          ports:
+            - containerPort: 3000
+
+---
+# Nginx Service (LoadBalancer)
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 80
+      targetPort: 80
+  selector:
+    app: nginx
+
+---
+# Nginx Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:alpine
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: nginx-conf
+              mountPath: /etc/nginx/conf.d/default.conf
+              subPath: nginx.conf
+      volumes:
+        - name: nginx-conf
+          configMap:
+            name: nginx-config
