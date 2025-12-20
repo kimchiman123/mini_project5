@@ -17,7 +17,7 @@ phases:
     commands:
       - echo "ECR Login"
       - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 416225317325.dkr.ecr.us-east-1.amazonaws.com
-      - REPO_BACKEND=416225317325.dkr.ecr.us-east-1.amazonaws.com/ai0102-back
+      - REPO_BACKEND=416225317325.dkr.ecr.us-east-1.amazonaws.com/ai0102-backend
       - REPO_FRONTEND=416225317325.dkr.ecr.us-east-1.amazonaws.com/ai0102-front
       - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
       - IMAGE_TAG=${COMMIT_HASH:=latest}
