@@ -182,15 +182,14 @@ spec:
               value: update
           livenessProbe:
             httpGet:
-              path: /api/health
-              port: 8080
-            initialDelaySeconds: 30
+              path: /      # 1. /api/health 컨트롤러 X, 기본 경로인 / 로 변경
+            initialDelaySeconds: 60 # 2. 앱이 뜨는 시간(32초)보다 넉넉하게 60초 설정
             periodSeconds: 10
           readinessProbe:
             httpGet:
-              path: /api/health
+              path: /      
               port: 8080
-            initialDelaySeconds: 5
+            initialDelaySeconds: 30 # 30초는 지나야 체크 시작
             periodSeconds: 10
 
 ---
