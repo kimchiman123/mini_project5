@@ -7,6 +7,8 @@ metadata:
     k8s-app: cluster-autoscaler
   name: cluster-autoscaler
   namespace: kube-system
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::416225317325:role/ai0102-eks-cluster-role
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -142,16 +144,10 @@ spec:
         runAsNonRoot: true
         runAsUser: 65534
         fsGroup: 65534
-        seccompProfile:
-          type: RuntimeDefault
       serviceAccountName: cluster-autoscaler
       containers:
         - image: registry.k8s.io/autoscaling/cluster-autoscaler:v1.32.1
           name: cluster-autoscaler
-          # 리전 환경변수 추가
-          env:
-            - name: AWS_REGION
-              value: us-east-1
           resources:
             limits:
               cpu: 100m
@@ -167,19 +163,14 @@ spec:
             - --skip-nodes-with-local-storage=false
             - --expander=least-waste
             - --node-group-auto-discovery=asg:tag=k8s.io/cluster-autoscaler/enabled,k8s.io/cluster-autoscaler/ai0102-EKS
-            - --balance-similar-node-groups
-            - --skip-nodes-with-system-pods=false
+          env:
+            - name: AWS_REGION
+              value: us-east-1
           volumeMounts:
             - name: ssl-certs
               mountPath: /etc/ssl/certs/ca-certificates.crt
               readOnly: true
           imagePullPolicy: "Always"
-          securityContext:
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop:
-                - ALL
-            readOnlyRootFilesystem: true
       volumes:
         - name: ssl-certs
           hostPath:

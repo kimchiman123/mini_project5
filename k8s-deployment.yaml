@@ -291,11 +291,20 @@ spec:
           labelSelector:
             matchLabels:
               app: nginx
+      initContainers:
+        - name: wait-for-frontend
+          image: busybox:1.28
+          command: ['sh', '-c', "until nslookup frontend; do echo waiting for frontend; sleep 2; done"]
       containers:
         - name: nginx
           image: nginx:alpine
           ports:
             - containerPort: 80
+          readinessProbe:
+            tcpSocket:
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 5
           resources:
             requests:
               cpu: "100m"
