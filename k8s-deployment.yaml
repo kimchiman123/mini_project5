@@ -154,9 +154,9 @@ spec:
             matchLabels:
               app: backend
       initContainers:
-      - name: wait-for-db
-        image: busybox:1.28
-        command: ['sh', '-c', "until nslookup db; do echo waiting for db; sleep 2; done"]
+        - name: wait-for-db
+          image: busybox:1.28
+          command: ['sh', '-c', "until nslookup db; do echo waiting for db; sleep 2; done"]
       containers:
         - name: backend
           image: 416225317325.dkr.ecr.us-east-1.amazonaws.com/ai0102-backend:latest
