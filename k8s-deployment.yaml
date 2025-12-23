@@ -156,7 +156,7 @@ spec:
       initContainers:
         - name: wait-for-db
           image: busybox:1.28
-          command: ['sh', '-c', "until nslookup db; do echo waiting for db; sleep 2; done"]
+          command: ['sh', '-c', "until nc -zv db-0.db.default.svc.cluster.local 5432; do echo waiting for db; sleep 2; done"]
       containers:
         - name: backend
           image: 416225317325.dkr.ecr.us-east-1.amazonaws.com/ai0102-backend:latest
@@ -171,7 +171,7 @@ spec:
               memory: "512Mi"
           env:
             - name: SPRING_DATASOURCE_URL
-              value: jdbc:postgresql://db:5432/bookdb
+              value: jdbc:postgresql://db-0.db.default.svc.cluster.local:5432/bookdb
             - name: SPRING_DATASOURCE_USERNAME
               valueFrom:
                 secretKeyRef:
@@ -185,16 +185,14 @@ spec:
             - name: SPRING_JPA_HIBERNATE_DDL_AUTO
               value: update
           livenessProbe:
-            httpGet:
-              path: /
-              port: 8080  
-            initialDelaySeconds: 60
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 120
             periodSeconds: 10
           readinessProbe:
-            httpGet:
-              path: /      
+            tcpSocket:
               port: 8080
-            initialDelaySeconds: 60
+            initialDelaySeconds: 90
             periodSeconds: 10
 
 ---
